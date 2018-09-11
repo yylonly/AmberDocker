@@ -8,7 +8,7 @@
 * Amber 
 
 ### Build Amber Image
-
+* (**windows only**) git config --global core.autocrlf false 
 * git clone https://github.com/yylonly/AmberDocker.git
 * cd Amberdocker
 * put Amber18.tar.bz2 and AmberTools18.tar.bz2 into this folder 
