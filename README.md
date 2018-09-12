@@ -7,8 +7,7 @@
 * [Docker](https://www.docker.com/products/docker-desktop)
 * [Git](https://git-scm.com/download/win) 
 * [VNC Viewer](https://www.realvnc.com/en/connect/download/viewer/)
-* Manually donwload Amber18.tar.bz2, AmberTools18.tar.bz2, and vmd-1.9.3.tar.gz
-
+* Manually donwload  AmberTools18.tar.bz2, vmd-1.9.3.tar.gz, and Amber18.tar.bz2 (license required)
 ### Build Amber Image
 
 Open command line, then type:
