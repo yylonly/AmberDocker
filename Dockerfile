@@ -7,8 +7,7 @@ RUN mkdir -p /data
 VOLUME /data
 
 # Instalol c++ Chain
-#RUN apt update && apt install cmake -y wget bc csh flex gfortran g++ xorg-dev zlib1g-dev libbz2-dev patch
-RUN apt-get update && apt-get install -y cmake wget csh flex patch gfortran g++ make xorg-dev libbz2-dev zlib1g-dev libboost-dev libboost-thread-dev libboost-system-dev
+RUN apt-get update && apt-get install -y cmake wget csh flex patch gfortran g++ make xorg-dev libbz2-dev zlib1g-dev libboost-dev libboost-thread-dev libboost-system-dev bash xorg lightdm
 
 # Install OpenMPI
 #RUN apt-get install -y openmpi-bin libopenmpi-dev
@@ -19,34 +18,26 @@ RUN mkdir /amber_source && mkdir /amber
 COPY Amber18.tar.bz2 /amber_source/
 COPY AmberTools18.tar.bz2 /amber_source/
 
-# Amber environment
-# ENV AMBERHOME=/amber/amber18
-#   CONDAHOME=/root/miniconda3 \
-#    PATH=$PATH:$CONDAHOME/bin \
-#    DO_PARALLEL="mpirun -np 8"
-    
-
+   
 WORKDIR /amber_source
-# extract Amber source code
-RUN tar xvfj Amber18.tar.bz2 \
-	&& tar xvfj AmberTools18.tar.bz2 \
-        && rm -rf Amber18.tar.bz2 \
-        && rm -rf AmberTools18.tar.bz2
+
+RUN tar -jxvf AmberTools18.tar.bz2 && \
+    tar -jxvf Amber18.tar.bz2 && \
+    rm -rf AmberTools18.tar.bz2 && \
+    rm -rf Amber18.tar.bz2
 
 # CMake
-RUN cd amber18 && \ 
-    	mkdir build && \
+RUN cd amber18 && \
+ 	mkdir build && \
 	cd build && \
-	cmake .. -DCMAKE_INSTALL_PREFIX=/amber -DCOMPILER=GNU -DCUDA=FALSE -DDOWNLOAD_MINICONDA=TRUE -DMINICONDA_USE_PY3=TRUE && \
+	cmake .. -DAPPLY_UPDATES=TRUE -DCMAKE_INSTALL_PREFIX=/amber -DBUILD_GUI=TRUE -DBUILD_PERL=TRUE -DCOMPILER=GNU -DCUDA=FALSE -DDOWNLOAD_MINICONDA=TRUE -DMINICONDA_USE_PY3=TRUE && \
 	make && \
 	make install
 
 ENV AMBERHOME=/amber
 ENV PATH=/amber/bin:$PATH
 ENV LD_LIBRARY_PATH=/amber/lib:$LD_LIBRARY_PATH
-#RUN echo "test -f $AMBERHOME/amber.sh  && . $AMBERHOME/amber.sh" >> /etc/profile
 RUN rm -rf /amber_source
-WORKDIR /amber
 
 ###### VNC #######
 
@@ -84,7 +75,8 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 RUN $INST_SCRIPTS/tigervnc.sh
 RUN $INST_SCRIPTS/no_vnc.sh
 
-### Install chrome browser
+### Install firefox
+RUN $INST_SCRIPTS/firefox.sh
 RUN $INST_SCRIPTS/chrome.sh
 
 ### Install xfce UI
@@ -95,6 +87,20 @@ ADD ./src/common/xfce/ $HOME/
 RUN $INST_SCRIPTS/libnss_wrapper.sh
 ADD ./src/common/scripts $STARTUPDIR
 RUN $INST_SCRIPTS/set_user_permission.sh $STARTUPDIR $HOME
+
+
+### Other tools (xmgrace and vmd)
+RUN mkdir -p /othertools
+WORKDIR /othertools
+RUN apt-get install -y grace
+COPY vmd-1.9.3.tar.gz /othertools/
+RUN ls -l 
+RUN tar xvf vmd-1.9.3.tar.gz
+RUN cd vmd-1.9.3 && \
+    ./configure && \
+    cd src && \
+    make install
+RUN cd / && rm -rf /othertools
 
 USER 1000
 
