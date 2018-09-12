@@ -10,13 +10,10 @@
 * Manually donwload Amber18.tar.bz2, AmberTools18.tar.bz2, and vmd-1.9.3.tar.gz
 
 ### Build Amber Image
-<<<<<<< HEAD
 * (**windows only**) git config --global core.autocrlf false 
-=======
 
 Open command line, then type:
 
->>>>>>> first version
 * git clone https://github.com/yylonly/AmberDocker.git
 * cd Amberdocker
 * manually download Amber18.tar.bz2 and AmberTools18.tar.bz2 into this folder 
