@@ -6,8 +6,14 @@ LABEL Description="Amber and Amber Tool 23"
 RUN mkdir -p /data
 VOLUME /data
 
-# Instalol c++ Chain
-RUN apt-get update && apt-get install -y cmake wget csh flex patch gfortran g++ make xorg-dev libbz2-dev zlib1g-dev libboost-dev libboost-thread-dev libboost-system-dev bash xorg lightdm
+# Install c++ Chain
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata
+RUN apt-get install -y cmake wget csh flex patch gfortran gcc-6 make xorg-dev libbz2-dev zlib1g-dev libboost-dev libboost-thread-dev libboost-system-dev bash xorg lightdm
+# Update cmake to minimum required for building Amber22/23 (3.8.1)
+RUN apt remove cmake -y && \
+	wget https://cmake.org/files/v3.8/cmake-3.8.1-Linux-x86_64.sh && \
+	chmod +x cmake-3.8.1-Linux-x86_64.sh && \
+	bash cmake-3.8.1-Linux-x86_64.sh --skip-license
 
 # Install OpenMPI
 #RUN apt-get install -y openmpi-bin libopenmpi-dev
