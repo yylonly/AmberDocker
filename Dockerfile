@@ -8,12 +8,12 @@ VOLUME /data
 
 # Install c++ Chain
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata
-RUN apt-get install -y cmake wget csh flex patch gfortran gcc-6 make xorg-dev libbz2-dev zlib1g-dev libboost-dev libboost-thread-dev libboost-system-dev bash xorg lightdm
-# Update cmake to minimum required for building Amber22/23 (3.8.1)
+RUN apt-get install -y cmake wget csh libfl-dev libbison-dev patch gfortran gcc-6 make xorg-dev libbz2-dev zlib1g-dev libboost-dev libboost-thread-dev libboost-system-dev bash xorg lightdm
+# Update cmake to minimum required for building Amber22/23
 RUN apt remove cmake -y && \
-    wget https://cmake.org/files/v3.8/cmake-3.8.1-Linux-x86_64.sh && \
-    chmod +x cmake-3.8.1-Linux-x86_64.sh && \
-    bash cmake-3.8.1-Linux-x86_64.sh --skip-license
+    wget -q https://cmake.org/files/v3.10/cmake-3.10.3-Linux-x86_64.sh && \
+    chmod +x cmake-3.10.3-Linux-x86_64.sh && \
+    bash cmake-3.10.3-Linux-x86_64.sh --skip-license
 
 # Install OpenMPI
 #RUN apt-get install -y openmpi-bin libopenmpi-dev
