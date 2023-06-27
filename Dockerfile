@@ -35,9 +35,8 @@ RUN tar -jxf AmberTools23.tar.bz2 && \
 # CMake
 RUN cd amber22_src && \
     cd build && \
-    ./run_cmake && \
-    # cmake .. -DAPPLY_UPDATES=TRUE -DCMAKE_INSTALL_PREFIX=/amber -DBUILD_GUI=TRUE -DBUILD_PERL=TRUE -DCOMPILER=GNU -DCUDA=FALSE -DDOWNLOAD_MINICONDA=TRUE -DMINICONDA_USE_PY3=TRUE && \
-    # make && \
+    cmake .. -DAPPLY_UPDATES=TRUE -DCMAKE_INSTALL_PREFIX=/amber -DBUILD_GUI=TRUE -DBUILD_PERL=TRUE -DCOMPILER=GNU -DCUDA=FALSE -DDOWNLOAD_MINICONDA=TRUE -DMINICONDA_USE_PY3=TRUE && \
+    make && \
     make install
 
 ENV AMBERHOME=/amber
