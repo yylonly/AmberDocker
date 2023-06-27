@@ -81,6 +81,8 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 ### Install xvnc-server & noVNC - HTML5 based VNC viewer
 RUN $INST_SCRIPTS/tigervnc.sh
 RUN $INST_SCRIPTS/no_vnc.sh
+# tigervnc script installs vncserver binary to /usr/libexec
+ENV PATH=/usr/libexec:$PATH
 
 ### Install firefox
 RUN $INST_SCRIPTS/firefox.sh
@@ -108,6 +110,7 @@ RUN cd vmd-1.9.3 && \
     cd src && \
     make install
 RUN cd / && rm -rf /othertools
+WORKDIR /
 
 USER 1000
 
