@@ -1,43 +1,49 @@
-FROM ubuntu:16.04
+FROM --platform=linux/amd64 ubuntu:18.04
 
-LABEL Description="Amber and Amber Tool 18"
+LABEL Description="Amber and Amber Tool 23"
 
 # Mount Point
 RUN mkdir -p /data
 VOLUME /data
 
-# Instalol c++ Chain
-RUN apt-get update && apt-get install -y cmake wget csh flex patch gfortran g++ make xorg-dev libbz2-dev zlib1g-dev libboost-dev libboost-thread-dev libboost-system-dev bash xorg lightdm
+# Install c++ Chain
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get -y install tzdata
+RUN apt-get install -y cmake wget csh libfl-dev libbison-dev patch gfortran gcc-6 make xorg-dev libbz2-dev zlib1g-dev libboost-dev libboost-thread-dev libboost-system-dev bash xorg lightdm
+# Update cmake to minimum required for building Amber22/23
+RUN apt remove cmake -y && \
+    wget -q https://cmake.org/files/v3.10/cmake-3.10.3-Linux-x86_64.sh && \
+    chmod +x cmake-3.10.3-Linux-x86_64.sh && \
+    bash cmake-3.10.3-Linux-x86_64.sh --skip-license
 
 # Install OpenMPI
 #RUN apt-get install -y openmpi-bin libopenmpi-dev
 
 
 # Amber source code
-RUN mkdir /amber_source && mkdir /amber
-COPY Amber18.tar.bz2 /amber_source/
-COPY AmberTools18.tar.bz2 /amber_source/
+RUN mkdir /amber22_src && mkdir /amber
+COPY Amber22.tar.bz2 /amber22_src/
+COPY AmberTools23.tar.bz2 /amber22_src/
 
-   
-WORKDIR /amber_source
 
-RUN tar -jxvf AmberTools18.tar.bz2 && \
-    tar -jxvf Amber18.tar.bz2 && \
-    rm -rf AmberTools18.tar.bz2 && \
-    rm -rf Amber18.tar.bz2
+WORKDIR /amber22_src
+
+RUN tar -jxf AmberTools23.tar.bz2 && \
+    tar -jxf Amber22.tar.bz2 && \
+    rm -rf AmberTools23.tar.bz2 && \
+    rm -rf Amber22.tar.bz2 
 
 # CMake
-RUN cd amber18 && \
- 	mkdir build && \
-	cd build && \
-	cmake .. -DAPPLY_UPDATES=TRUE -DCMAKE_INSTALL_PREFIX=/amber -DBUILD_GUI=TRUE -DBUILD_PERL=TRUE -DCOMPILER=GNU -DCUDA=FALSE -DDOWNLOAD_MINICONDA=TRUE -DMINICONDA_USE_PY3=TRUE && \
-	make && \
-	make install
+RUN cd amber22_src && \
+    cd build && \
+    cmake .. -DAPPLY_UPDATES=TRUE -DCMAKE_INSTALL_PREFIX=/amber -DBUILD_GUI=TRUE -DBUILD_PERL=TRUE -DCOMPILER=GNU -DCUDA=FALSE -DDOWNLOAD_MINICONDA=TRUE -DMINICONDA_USE_PY3=TRUE && \
+    make && \
+    make install
 
 ENV AMBERHOME=/amber
 ENV PATH=/amber/bin:$PATH
 ENV LD_LIBRARY_PATH=/amber/lib:$LD_LIBRARY_PATH
-RUN rm -rf /amber_source
+RUN rm -rf /amber22_src
+RUN echo "source /amber/amber.sh" >> /root/.bashrc
 
 ###### VNC #######
 
@@ -74,6 +80,8 @@ ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 ### Install xvnc-server & noVNC - HTML5 based VNC viewer
 RUN $INST_SCRIPTS/tigervnc.sh
 RUN $INST_SCRIPTS/no_vnc.sh
+# tigervnc script installs vncserver binary to /usr/libexec
+ENV PATH=/usr/libexec:$PATH
 
 ### Install firefox
 RUN $INST_SCRIPTS/firefox.sh
@@ -101,6 +109,7 @@ RUN cd vmd-1.9.3 && \
     cd src && \
     make install
 RUN cd / && rm -rf /othertools
+WORKDIR /
 
 USER 1000
 
